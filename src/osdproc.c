@@ -64,6 +64,37 @@ const char * spd_unit = METRIC_SPEED;
 extern uint8_t *write_buffer_tele;
 void debug_wps();
 
+enum PX4_CUSTOM_MAIN_MODE {
+        PX4_CUSTOM_MAIN_MODE_MANUAL = 1,
+        PX4_CUSTOM_MAIN_MODE_ALTCTL,
+        PX4_CUSTOM_MAIN_MODE_POSCTL,
+        PX4_CUSTOM_MAIN_MODE_AUTO,
+        PX4_CUSTOM_MAIN_MODE_ACRO,
+        PX4_CUSTOM_MAIN_MODE_OFFBOARD,
+        PX4_CUSTOM_MAIN_MODE_STABILIZED
+};
+
+enum PX4_CUSTOM_SUB_MODE_AUTO {
+        PX4_CUSTOM_SUB_MODE_AUTO_READY = 1,
+        PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF,
+        PX4_CUSTOM_SUB_MODE_AUTO_LOITER,
+        PX4_CUSTOM_SUB_MODE_AUTO_MISSION,
+        PX4_CUSTOM_SUB_MODE_AUTO_RTL,
+        PX4_CUSTOM_SUB_MODE_AUTO_LAND,
+        PX4_CUSTOM_SUB_MODE_AUTO_RTGS
+};
+
+union px4_custom_mode {
+        struct {
+                uint16_t reserved;
+                uint8_t main_mode;
+                uint8_t sub_mode;
+        };
+        uint32_t data;
+        float data_float;
+};
+
+
 static void inline setbit(uint8_t* buf, uint32_t bit)
 {
    uint32_t byte_index = bit/8U;
@@ -617,7 +648,10 @@ void RenderScreen(void)
 
 void draw_flight_mode(int x, int y, int xs, int ys, int va, int ha, int flags, int font)
 {
+    union px4_custom_mode custom_mode = { .data = osd_mode };
     char* mode_str = "unknown";
+
+#if 0
     if (apm_mav_type != 1){ //ArduCopter MultiRotor or ArduCopter Heli
         if (osd_mode == 0)       mode_str = "STAB"; //manual airframe angle with manual throttle
         else if (osd_mode == 1)  mode_str = "ACRO"; //manual body-frame angular rate with manual throttle
@@ -651,6 +685,74 @@ void draw_flight_mode(int x, int y, int xs, int ys, int va, int ha, int flags, i
         else if (osd_mode == 12) mode_str = "LOIT"; //Loiter
         else if (osd_mode == 15) mode_str = "GUID"; //Guided
         else if (osd_mode == 16) mode_str = "INIT"; //Initializing
+    }
+#endif
+
+    switch(custom_mode.main_mode)
+    {
+    case PX4_CUSTOM_MAIN_MODE_MANUAL:
+        mode_str = "MANU";
+        break;
+
+    case PX4_CUSTOM_MAIN_MODE_ALTCTL:
+        mode_str = "ALTCTL";
+        break;
+
+    case PX4_CUSTOM_MAIN_MODE_POSCTL:
+        mode_str = "POSCTL";
+        break;
+
+    case PX4_CUSTOM_MAIN_MODE_AUTO:
+        switch(custom_mode.sub_mode)
+        {
+        case PX4_CUSTOM_SUB_MODE_AUTO_READY:
+            mode_str = "READY";
+            break;
+
+        case PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF:
+            mode_str = "TAKEOFF";
+            break;
+
+        case PX4_CUSTOM_SUB_MODE_AUTO_LOITER:
+            mode_str = "LOITER";
+            break;
+
+        case PX4_CUSTOM_SUB_MODE_AUTO_MISSION:
+            mode_str = "MISSION";
+            break;
+
+        case PX4_CUSTOM_SUB_MODE_AUTO_RTL:
+            mode_str = "RTL";
+            break;
+
+        case PX4_CUSTOM_SUB_MODE_AUTO_LAND:
+            mode_str = "LAND";
+            break;
+
+        case PX4_CUSTOM_SUB_MODE_AUTO_RTGS:
+           mode_str = "RTGS";
+            break;
+
+        default:
+            mode_str = "AUTO";
+            break;
+        }
+        break;
+
+    case PX4_CUSTOM_MAIN_MODE_ACRO:
+        mode_str = "ACRO";
+        break;
+
+    case PX4_CUSTOM_MAIN_MODE_OFFBOARD:
+        mode_str = "OFFB";
+        break;
+
+    case PX4_CUSTOM_MAIN_MODE_STABILIZED:
+        mode_str = "STAB";
+        break;
+
+    default:
+        break;
     }
 
     write_string(mode_str, x, y, xs, ys, va, ha, flags, font);
