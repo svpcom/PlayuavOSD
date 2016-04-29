@@ -10,7 +10,7 @@
 // we have separate helpers disabled to make it possible
 // to select MAVLink 1.0 in the arduino GUI build
 //#define MAVLINK_SEPARATE_HELPERS
-#include "ardupilotmega/version.h"
+#include "common/version.h"
 
 // this allows us to make mavlink_message_t much smaller
 #define MAVLINK_MAX_PAYLOAD_LEN MAVLINK_MAX_DIALECT_PAYLOAD_SIZE
@@ -36,7 +36,7 @@ static inline void comm_send_ch(mavlink_channel_t chan, uint8_t ch)
 }
 
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
-#include "ardupilotmega/mavlink.h"
+#include "common/mavlink.h"
 
 void request_mavlink_rates(void);
 void request_mission_count(void);
