@@ -238,14 +238,16 @@ void parseMavlink(void)
                         osd_rssi = mavlink_msg_rc_channels_get_rssi(&msg);
                     }
                     break;
-                case MAVLINK_MSG_ID_WIND:
-                    {
-                        osd_windDir = mavlink_msg_wind_get_direction(&msg); // 0..360 deg, 0=north
-                        osd_windSpeed = mavlink_msg_wind_get_speed(&msg); //m/s
-                    }
-                    break;
+                //case MAVLINK_MSG_ID_WIND:
+                //    {
+                //        osd_windDir = mavlink_msg_wind_get_direction(&msg); // 0..360 deg, 0=north
+                //        osd_windSpeed = mavlink_msg_wind_get_speed(&msg); //m/s
+                //    }
+                //    break;
 
-                case MAVLINK_MSG_ID_MISSION_COUNT:
+		// Temporary disable mission handling
+                /* 
+ 		  case MAVLINK_MSG_ID_MISSION_COUNT:
                     {
                         mission_counts = mavlink_msg_mission_count_get_count(&msg);                        
                         got_mission_counts = 1;
@@ -254,7 +256,7 @@ void parseMavlink(void)
                         wp_counts = 0;
                     }
                     break;
-                    
+    
                 case MAVLINK_MSG_ID_MISSION_ITEM:
                     {
                         uint16_t seq, cmd;
@@ -292,6 +294,7 @@ void parseMavlink(void)
                     }
                     break;
 
+	       */
 /*
                 // will be used in the future. See Samuel's PR:https://github.com/PlayUAV/PlayuavOSD/pull/13
                 // Noticed: the type of variable in this message is int32_t. Currently we use float type to simulate.
